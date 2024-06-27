@@ -8,20 +8,44 @@ const supabaseKey =
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Handler function
-exports.handler = async (event, context) => {
-  try {
-    // Fetch data from Supabase
-    const { data, error } = await supabase.from("students").select("*");
+exports.handler = async (req, res) => {
+  const responseHeaders = {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, Cookie',
+  };
 
-    // Return response
-    return {
-      statusCode: 200,
-      body: JSON.stringify(data),
-    };
+  if (req.method === 'OPTIONS') {
+      return {
+          statusCode: 200,
+          headers: responseHeaders,
+          body: JSON.stringify({ message: 'CORS preflight request successful' }),
+      };
+  }
+
+  try {
+      const { data, error } = await supabase
+          .from('students')
+          .select('*');
+
+      if (error) {
+          return {
+              statusCode: 500,
+              headers: responseHeaders,
+              body: JSON.stringify({ error: error.message }),
+          };
+      } else {
+          return {
+              statusCode: 200,
+              headers: responseHeaders,
+              body: JSON.stringify(data),
+          };
+      }
   } catch (error) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: error.message }),
-    };
+      return {
+          statusCode: 500,
+          headers: responseHeaders,
+          body: JSON.stringify({ error: error.message }),
+      };
   }
 };
