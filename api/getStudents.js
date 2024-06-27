@@ -7,22 +7,18 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Handler function
-exports.handler = async (event, context) => {
+module.exports = async (req, res) => {
     try {
-        // Fetch data from Supabase
         const { data, error } = await supabase
             .from('students')
             .select('*');
 
-        // Return response
-        return {
-            statusCode: 200,
-            body: JSON.stringify(data),
-        };
+        if (error) {
+            res.status(500).json({ error: error.message });
+        } else {
+            res.status(200).json(data);
+        }
     } catch (error) {
-        return {
-            statusCode: 500,
-            body: JSON.stringify({ error: error.message }),
-        };
+        res.status(500).json({ error: error.message });
     }
 };
