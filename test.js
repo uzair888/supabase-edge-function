@@ -1,4 +1,4 @@
-const { handler } = require("./api/getStudents");
+const { handler } = require("./getStudents");
 
 async function test() {
   const event = {}; // You can simulate event data if needed
